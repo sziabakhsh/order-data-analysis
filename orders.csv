@@ -1,0 +1,5 @@
+order_id,customer,city,amount,date
+1,Ali,Tehran,120,2024-01-05
+2,Sara,Shiraz,200,2024-01-10
+3,Reza,Tehran,150,2024-02-01
+4,Mina,Tabriz,300,2024-02-03
