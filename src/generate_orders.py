@@ -18,5 +18,5 @@ for i in range(1, recNo+1):
     data.append([i, customer, city, amount, date_str])
 
 df = pd.DataFrame(data, columns=["order_id","customer","city","amount","date"])
-df.to_csv("orders_500.csv", index=False)
+df.to_csv("..\\data\\orders_500.csv", index=False)
 print("orders_500.csv created with 500 records")
