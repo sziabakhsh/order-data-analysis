@@ -6,6 +6,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from datetime import datetime
 
 # Optional: adding theme to project
 sns.set(style="whitegrid")
@@ -40,7 +41,7 @@ sales_by_city = (
     .rename(columns={'amount':'TotalByCity'})
     .sort_values(by='TotalByCity' , ascending=False)
 )
-print(sales_by_city.head(5))
+print(sales_by_city.head())
 
 # 3d. Orders by Customer
 orders_by_customer = (
@@ -56,42 +57,67 @@ print(orders_by_customer.head(5))
 # 4️⃣ Advanced Analysis
 
 # 4a. Monthly Sales Trend
-# df['date'] = pd.to_datetime(df['date'])
-# df['month'] = df['date'].dt.month
-# monthly_sales = ...
-# print(monthly_sales)
+df['date'] = pd.to_datetime(df['date'])
+df['month'] = df['date'].dt.to_period('M')
+monthly_sales = (
+    df.groupby('month', as_index=False)['amount']
+    .sum()
+    .rename(columns={'amount':'TotalAmount'})
+    .sort_values(by='month', ascending=True)
+)
+print(monthly_sales)
 
 # 4b. Highest Sales Day
-# daily_sales = ...
-# max_day = ...
-# print(max_day)
+daily_sales = (
+    df.groupby('date', as_index=False)['amount']
+    .sum()
+    .rename(columns={'amount':'TotalAmount'})
+)
+max_day = daily_sales.sort_values(by='TotalAmount' , ascending=False)
+print(max_day.head(1))
 
 # 4c. Top 5 Customers
-# top_customers = ...
-# print(top_customers)
+top_customers = (
+    df.groupby('customer',as_index=False)['amount']
+    .sum()
+    .rename(columns={'amount':'TotalAmount'})
+    .sort_values(by='TotalAmount', ascending=False)
+    .head(5)
+)
+print(top_customers)
 
 # 5️⃣ Visualization
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 
 # Example: Sales by City
-# plt.figure(figsize=(8,5))
-# sns.barplot(x=sales_by_city.index, y=sales_by_city.values)
-# plt.title("Sales by City")
-# plt.xlabel("City")
-# plt.ylabel("Total Sales")
-# plt.show()
+plt.figure(figsize=(8,5))
+sns.barplot(data=sales_by_city, x='city', y='TotalByCity')
+plt.title("Sales by City")
+plt.xlabel("City")
+plt.ylabel("Total Sales")
+plt.savefig(f"../figures/SalesByCity{timestamp}.png")
+sales_by_city.to_csv(f"../results/sales_by_city_{timestamp}.csv", index=False)
+plt.show()
 
 # Example: Monthly Sales Trend
-# plt.figure(figsize=(8,5))
-# sns.lineplot(x=monthly_sales.index, y=monthly_sales.values, marker='o')
-# plt.title("Monthly Sales Trend")
-# plt.xlabel("Month")
-# plt.ylabel("Total Sales")
-# plt.show()
+plt.figure(figsize=(8,5))
+
+monthly_sales['month'] = monthly_sales['month'].astype(str)
+sns.lineplot(data=monthly_sales, x='month', y='TotalAmount')
+plt.title("Monthly Sales Trend")
+plt.xlabel("Month")
+plt.ylabel("Total Sales")
+plt.savefig(f"../figures/MonthlySalesTrend{timestamp}.png")
+monthly_sales.to_csv(f"../results/MonthlySalesTrend{timestamp}.csv", index=False)
+plt.show()
 
 # Example: Top 5 Customers
-# plt.figure(figsize=(8,5))
-# sns.barplot(x=top_customers.index, y=top_customers.values)
-# plt.title("Top 5 Customers by Sales")
-# plt.xlabel("Customer")
-# plt.ylabel("Total Sales")
-# plt.show()
+plt.figure(figsize=(8,5))
+sns.barplot(data=top_customers,  x='customer', y='TotalAmount')
+plt.title("Top 5 Customers by Sales")
+plt.xlabel("Customer")
+plt.ylabel("Total Sales")
+plt.savefig(f"../figures/Top5Customers{timestamp}.png")
+top_customers.to_csv(f"../results/Top5Customers{timestamp}.csv", index=False)
+plt.show()
